@@ -3525,3 +3525,6 @@ tableManager:
   retention_deletes_enabled: false
   # -- Set retention period
   retention_period: 0
+
+alertmanager:
+  enabled: false
