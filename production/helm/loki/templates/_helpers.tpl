@@ -418,10 +418,7 @@ ruler:
   storage:
     {{- include "loki.rulerStorageConfig" . | nindent 4}}
 {{- if .Values.alertmanager.enabled }}
-  remote_write:
-    enabled: true
-    client:
-      url: http://{{ template "loki.fullname" $ }}-alertmanager-headless:9093/api/v1/write
+  alertmanager_url: http://{{ template "loki.fullname" $ }}-alertmanager-headless:9093
 {{- end }}
 {{- if (not (empty .Values.loki.rulerConfig)) }}
 {{- toYaml .Values.loki.rulerConfig | nindent 2}}
