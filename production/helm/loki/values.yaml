@@ -276,14 +276,6 @@ loki:
     distributor:
       {{- tpl (. | toYaml) $ | nindent 4 }}
     {{- end }}
-
-    {{- if .Values.alertmanager.enabled }}
-    ruler:
-      remote_write:
-        enabled: true
-        client:
-          url: http://{{ template "loki.fullname" $ }}-alertmanager-headless:9093/api/v1/write
-    {{- end }}
     
     tracing:
       enabled: {{ .Values.loki.tracing.enabled }}
