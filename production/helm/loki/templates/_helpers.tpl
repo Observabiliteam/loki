@@ -986,14 +986,13 @@ http {
       internal;        # to suppress 301
     }
 
-
-    {{- if .Values.alertmanager.enabled }}
+    {{ if .Values.alertmanager.enabled }}
     # Alertmanager
     location = /alertmanager {
         return 302 /alertmanager/;
     }
     location /alertmanager/ {
-        proxy_pass http://{{ $alertmanagerUrl }}/;
+        proxy_pass {{ $alertmanagerUrl }}/;
     }
     {{- end }}
 
