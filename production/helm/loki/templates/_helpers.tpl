@@ -753,6 +753,7 @@ http {
 
   default_type application/octet-stream;
   log_format   {{ .Values.gateway.nginxConfig.logFormat }}
+  port_in_redirect off;
 
   {{- if .Values.gateway.verboseLogging }}
   access_log   /dev/stderr  main;
