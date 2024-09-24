@@ -31,6 +31,13 @@ singleBinary fullname
 {{- end -}}
 
 {{/*
+alertmanager fullname
+*/}}
+{{- define "loki.alertmanagerFullname" -}}
+{{ include "alertmanager.fullname" .Subcharts.alertmanager }}
+{{- end }}
+
+{{/*
 Resource name template
 Params:
   ctx = . context
@@ -418,7 +425,7 @@ ruler:
   storage:
     {{- include "loki.rulerStorageConfig" . | nindent 4}}
 {{- if .Values.alertmanager.enabled }}
-  alertmanager_url: http://{{ template "loki.fullname" $ }}-alertmanager:9093
+  alertmanager_url: http://{{ $alertmanagerUrl }}
 {{- end }}
 {{- if (not (empty .Values.loki.rulerConfig)) }}
 {{- toYaml .Values.loki.rulerConfig | nindent 2}}
@@ -830,6 +837,7 @@ http {
     {{- $rulerHost := include "loki.rulerFullname" .}}
     {{- $compactorHost := include "loki.compactorFullname" .}}
     {{- $schedulerHost := include "loki.querySchedulerFullname" .}}
+    {{- $alertmanagerHost := include "loki.alertmanagerFullname" .}}
 
 
     {{- $distributorUrl := printf "%s://%s.%s.svc.%s:%s" $httpSchema $distributorHost .Release.Namespace .Values.global.clusterDomain (.Values.loki.server.http_listen_port | toString) -}}
@@ -839,6 +847,7 @@ http {
     {{- $rulerUrl := printf "%s://%s.%s.svc.%s:%s" $httpSchema $rulerHost .Release.Namespace .Values.global.clusterDomain (.Values.loki.server.http_listen_port | toString) }}
     {{- $compactorUrl := printf "%s://%s.%s.svc.%s:%s" $httpSchema $compactorHost .Release.Namespace .Values.global.clusterDomain (.Values.loki.server.http_listen_port | toString) }}
     {{- $schedulerUrl := printf "%s://%s.%s.svc.%s:%s" $httpSchema $schedulerHost .Release.Namespace .Values.global.clusterDomain (.Values.loki.server.http_listen_port | toString) }}
+    {{- $alertmanagerUrl := printf "%s://%s.%s.svc.%s:%s" $httpSchema $alertmanagerHost .Release.Namespace .Values.global.clusterDomain "9093" }}
 
     {{- if eq (include "loki.deployment.isSingleBinary" .) "true"}}
     {{- $distributorUrl = $singleBinaryUrl }}
@@ -976,6 +985,13 @@ http {
     location = /loki/api/v1 {
       internal;        # to suppress 301
     }
+
+    {{- if .Values.alertmanager.enabled }}
+    # Alertmanager
+    location = /alertmanager {
+      proxy_pass       {{ $alertmanagerUrl }}$request_uri;
+    }
+    {{- end }}
 
     {{- with .Values.gateway.nginxConfig.serverSnippet }}
     {{ . | nindent 4 }}
