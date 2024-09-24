@@ -426,6 +426,7 @@ ruler:
     {{- include "loki.rulerStorageConfig" . | nindent 4}}
 {{- if .Values.alertmanager.enabled }}
   alertmanager_url: http://{{ include "loki.alertmanagerFullname" .}}:9093
+  enable_alertmanager_v2: true
 {{- end }}
 {{- if (not (empty .Values.loki.rulerConfig)) }}
 {{- toYaml .Values.loki.rulerConfig | nindent 2}}
