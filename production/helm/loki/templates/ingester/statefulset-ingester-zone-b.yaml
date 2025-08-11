@@ -213,7 +213,7 @@ spec:
         {{- end }}
   {{- else }}
   volumeClaimTemplates:
-  {{- range .Values.ingester.persistence.claims }}
+  {{- range concat .Values.ingester.persistence.claims .Values.ingester.zoneAwareReplication.zoneB.persistence.claims }}
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
